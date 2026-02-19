@@ -37,13 +37,58 @@ Agent 會自動執行以下步驟：
 
 ### 3. 手動使用腳本 (進階)
 
-如果您想手動提取圖片而不透過 Agent，也可以直接在終端機運作：
-
 ```bash
-python skills/lol_replay_analysis/scripts/extract_frames.py "您的影片路徑.mp4"
+python scripts/extract_frames.py "您的影片路徑.mp4" --output-dir frames --interval 5
 ```
 
-執行後，圖片將會儲存在 `frames/` 資料夾中。
+可選參數：
+
+- `--output-dir`：輸出目錄（預設 `frames`）
+- `--interval`：每幾秒抽一張掃描幀（預設 `5`）
+- `--strict-read-fail`：只要有任一時間點讀取失敗，即回傳失敗碼
+
+執行後，圖片將會儲存在指定的輸出資料夾。
+
+## 🔁 建立 PR 後如何執行與更新（Codex 工作階段建議）
+
+以下是一個你可以每天重複使用的最小工作流程，幫你理解 Codex 修改程式碼的方式：
+
+1. **同步最新分支**
+
+   ```bash
+   git checkout work
+   git pull --rebase
+   ```
+
+2. **請 Codex 修改**（描述目標 + 驗收條件）
+   - 範例：
+     - 「修正 `extract_frames.py` 在缺少 cv2 時的錯誤提示，並補 CLI 參數。」
+     - 「最後請跑 `python -m compileall` 驗證。」
+
+3. **本機驗證**（你自己再跑一次）
+
+   ```bash
+   python -m compileall -q scripts/extract_frames.py
+   python scripts/extract_frames.py --help
+   ```
+
+4. **檢查差異與提交**
+
+   ```bash
+   git status
+   git diff
+   git add -A
+   git commit -m "<你的變更摘要>"
+   ```
+
+5. **建立/更新 PR**
+   - 由 Codex 產生 PR 標題與說明（含測試結果）。
+   - 若 reviewer 有 inline comment，直接把 comment 貼給 Codex，要求「逐條處理並更新 PR」。
+
+6. **迭代修正**
+   - 重複步驟 2~5，直到 CI 與 review 都通過。
+
+> 建議把第 3~4 步固定成你自己的「每日檢查清單」，能快速看懂 Codex 的每次改動是否合理。
 
 ## 📝 輸出範例
 
